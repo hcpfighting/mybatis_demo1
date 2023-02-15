@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mybatis.mapper.EmpMapper">
+
+    <resultMap id="empResultMap" type="Emp">
+        <!--设置主键字段的映射关系-->
+        <!--property:设置实体类中的属性名
+            colum:查询出来的字段名-->
+        <id property="eid" column="eid"></id>
+        <!--设置普通字段的映射关系-->
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="email" column="email"></result>
+    </resultMap>
+
+    <!--List<Emp> getAllEmp();-->
+    <select id="getAllEmp" resultMap="empResultMap">
+        select * from t_emp
+    </select>
+    
+    <resultMap id="empAndDeptResultMapOne" type="Emp">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="email" column="email"></result>
+        <association property="dept" javaType="Dept">
+            <id property="did" column="did"></id>
+            <result property="deptName" column="dept_name"></result>
+        </association>
+    </resultMap>
+
+    <!--Emp getEmpAndDept(@Param("eid") Integer eid);-->
+    <select id="getEmpAndDept" resultMap="empAndDeptResultMapOne">
+        SELECT * FROM t_emp LEFT JOIN t_dept ON t_emp.did =t_dept.did WHERE t_emp.eid = #{eid}
+    </select>
+
+    <resultMap id="empAndDeptResultMapOne1" type="Emp">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="email" column="email"></result>
+        <association property="dept"
+                     select="com.atguigu.mybatis.mapper.DeptMapper.getEmpAndDeptByStepTwo"
+                     column="did"
+                     fetchType="eager"></association>
+    </resultMap>
+
+    <!-- Emp getEmpAndDeptByStepOne(@Param("eid") Integer eid);-->
+    <select id="getEmpAndDeptByStepOne" resultMap="empAndDeptResultMapOne1">
+        select * from t_emp where eid = #{eid}
+    </select>
+
+    <!-- List<Emp> getDeptAndEmpTwo(@Param("did") Integer did);-->
+    <select id="getDeptAndEmpTwo" resultType="Emp">
+        select * from t_emp where did = #{did}
+    </select>
+
+</mapper>
